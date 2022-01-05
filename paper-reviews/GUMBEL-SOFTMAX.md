@@ -9,12 +9,11 @@
 2. 베르누이 변수 & 범주형 변수 모두 사용해서 실험
 3. Semi-supervised models train 하는데도 효과적이라는 것을 보임
 
-# The Gumbel-Softmax Distribution (https://www.youtube.com/watch?v=SRcPE0-SGOM)
+# The Gumbel-Softmax Distribution   
+* 참고자 [AI 공부 3. 쉽게 배우는 Gumbel-Softmax](https://www.youtube.com/watch?v=SRcPE0-SGOM)
 * 하고 싶은 것 : discrete distribution에서 뽑고 싶다. 샘플링을 differentiable(미분가능) 하게 하고 싶다. (네트워크에서 loss로 쓰이던지 하려고)   
     -> 출력 + Gumbel 가장 높은 애를 One-hot으로 지정해서 나오도록 하게 하고 싶다.
-* A continuous distribution over the simplex that can approximate samples from a categorical distribution. Let z be a categorical variable with
-class probabilities π1, π2, ...πk. For the remainder of this paper we assume categorical samples are
-encoded as k-dimensional one-hot vectors lying on the corners of the (k − 1)-dimensional simplex,
-∆k−1
-. This allows us to define quantities such as the element-wise mean Ep[z] = [π1, ..., πk] of
-these vectors.
+* Let z be a categorical variable with class probabilities π1, π2, ...πk. For the remainder of this paper we assume categorical samples are encoded as k-dimensional one-hot vectors lying on the corners of the (k − 1)-dimensional simplex, ∆k−1. This allows us to define quantities such as the element-wise mean Ep[z] = [π1, ..., πk] of these vectors.
+* The Gumbel Max trick   
+  * https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Gumbel-Density.svg/1200px-Gumbel-Density.svg.png
+* softmax temperature = annealing
