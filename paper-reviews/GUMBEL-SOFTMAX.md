@@ -15,7 +15,7 @@
     -> 출력 + Gumbel 가장 높은 애를 One-hot으로 지정해서 나오도록 하게 하고 싶다.
 * Let z be a categorical variable with class probabilities π1, π2, ...πk. For the remainder of this paper we assume categorical samples are encoded as k-dimensional one-hot vectors lying on the corners of the (k − 1)-dimensional simplex, ∆k−1. This allows us to define quantities such as the element-wise mean Ep[z] = [π1, ..., πk] of these vectors.
 * The Gumbel Max trick   
-  ![z.png](z.png) 
+  ![gumbelmax](./z.png) 
 
   * ![gumbel-distribution](https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Gumbel-Density.svg/1200px-Gumbel-Density.svg.png)
 * softmax temperature = annealing
