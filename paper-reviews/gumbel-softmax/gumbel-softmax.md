@@ -10,13 +10,47 @@
 3. Semi-supervised models train 하는데도 효과적이라는 것을 보임
 
 # The Gumbel-Softmax Distribution   
-* 참고자 [AI 공부 3. 쉽게 배우는 Gumbel-Softmax](https://www.youtube.com/watch?v=SRcPE0-SGOM)
-* 참고자 [AI 공부 3. 쉽게 배우는 Gumbel-Softmax](https://www.youtube.com/watch?v=SRcPE0-SGOM)
-* 하고 싶은 것 : discrete distribution에서 뽑고 싶다. 샘플링을 differentiable(미분가능) 하게 하고 싶다. (네트워크에서 loss로 쓰이던지 하려고)   
+* 참고자료 [AI 공부 3. 쉽게 배우는 Gumbel-Softmax](https://www.youtube.com/watch?v=SRcPE0-SGOM)
+* 하고 싶은 것 : 1. discrete distribution에서 뽑고 싶다. 2. 샘플링을 differentiable(미분가능) 하게 하고 싶다. (네트워크에서 loss로 쓰이던지 하려고)   
     -> 출력 + Gumbel 가장 높은 애를 One-hot으로 지정해서 나오도록 하게 하고 싶다.
-* Let z be a categorical variable with class probabilities π1, π2, ...πk. For the remainder of this paper we assume categorical samples are encoded as k-dimensional one-hot vectors lying on the corners of the (k − 1)-dimensional simplex, ∆k−1. This allows us to define quantities such as the element-wise mean Ep[z] = [π1, ..., πk] of these vectors.
-* The Gumbel Max trick  
-  ![z.png](./z.png)
+* Let z be a categorical variable with class probabilities π1, π2, ...πk. For the remainder of this paper we assume categorical samples are encoded as k-dimensional one-hot vectors lying on the corners of the (k − 1)-dimensional simplex, ∆k−1. This allows us to define quantities such as the element-wise mean Ep[z] = [π1, ..., πk] of these vectors.   
+![개괄.png](./개괄.png)   
+달리기 시합을 한다고 예시를 들어보자(전체 신경망 네트워크를 비유) 노드를 선수로 봤을 때, 출력(실력) estimate 한 것(노드가 뱉어낸 값)으로 보고, gumbel을 운으로 볼 수 있겠고 distribution으로 뽑을 것이다. One-hot(승자)은 0,1로 나타나니까 discrete. 어떤 네트워크의 output을 바탕으로 discrete distribution sampling한 것이다.   
 
-  * ![gumbel-distribution](https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Gumbel-Density.svg/1200px-Gumbel-Density.svg.png)
-* softmax temperature = annealing
+* Gumbel Max Trick  
+  ![z.png](./z.png)
+  * 이길 확률(더하면 1이어야 하고) z는 gumbel + 로그 파이i ! 로그를 씌우는 이유는 softmax와 연관이 있다. 네트워크 출력을 가지고 normalize하면 확률처럼 나오기 때문이고, log k는 출력과 같고 여기에 gumbel을 더한다. Gumbel(0,1)에서 sample 된 값이다. 이들 중 가장 큰 애의 index를 보겠다는 뜻!! z는 비유하자면 누가 가장 빠른가?를 보는 것이다. 선수가 이길 확률은 파이와 같다. 이를 통해 하고싶은 것 1을 이뤘다고 볼 수 O   
+    -> 근데 argmax는 NOT differentiable : 하나만 뽑기 때문에 한 점에서만 gradient가 존재하기 때문이다.   
+  ![gumbel-distribution](https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Gumbel-Density.svg/1200px-Gumbel-Density.svg.png)   
+    * The Gumbel(0, 1) distribution can be sampled using inverse transform sampling by drawing u ∼
+Uniform(0, 1) and computing g = − log(− log(u))   
+
+* Gumbel-Softmax Trick   
+  ![gumbelsoftmax.png](./gumbelsoftmax.png)   
+  ![r.png](./r.png)   
+  * 간단하게 Gumbel-Softmax는 위에 설명한 gumbel max trick을 미분가능하도록 바꾸어준 것이다. exponential 값을 normalize한 값들, temperature도 등장(***annealing과 비슷하다고?***)   
+  * expectation(실력이라고 볼 수 있음), 대회를 해서 1등을 가릴 때, 6번 애가 이기게 되는 것이다. 따라서 argmax도 6이 된다. r가 바뀔 때마다 값도 바뀐다. 0.1일 때는 기존 distribution을 많이 바꾸지 않는다 (비슷하다) 점점 temperature이 높아지면 변화가 생기고, 가끔 다른 선수들도 경기에서 1등을 하게 된다. r가 높아지면 동등하게 되는 모습!   
+  * 논문에서는 처음에 낮은 값에서 시작하여 maximum 2.0값으로 annealing하여 종료   
+
+  ## 2.1 Gumbel-Softmax Estimator   
+  *  By replacing categorical samples with Gumbel-Softmax samples we can use backpropagation to compute gradient   
+  *  Replacing non-differentiable categorical samples with a differentiable approximation during training as the Gumbel-Softmax estimator.   
+  -> 선수 1명만 뽑던 것을 gumbel을 train하면서 비슷하게 범주형 변수를 미분 가능하도록 바꾸겠다는 뜻으로 이해하였음   
+  * temperature은 fixed   
+
+  ## 2.2 Straight Through Gumbel Softmax Estimator   
+  * y가 우리가 원래 trick에서 보던 argmax(discrete)이니까 연속인 z로 근사하겠다는 뜻으로 이해하였음   
+  = Gumbel softmax trick을 사용하여 discrete distribution을 샘플링, argmax 대신에 softmax 대체      
+
+# 3. Related Work   
+  Review existing stochastic gradient estimation techniques for discrete variables
+  ## 3.1 Path Derivative Gradient Estimators   
+    * We exploit such a trick in the construction of the Gumbel-Softmax estimator.   
+  ![3-figure2.png](./3-figure2.png)   
+  * Gumbel-Softmax avoids this problem because each sample y is a differentiable proxy of the corresponding discrete sample z.   
+  * stochastic 부분과 deterministic부분을 분해시켜서 deterministic 한 부분으로 backpropagation을 흐르게, deterministic 한 부분은 vae에서는 평균과 분산 stochastic 한 부분은 epsilon
+
+  ## 3.2 Score Function Based Gradient Estimators   
+  ## 3.3 Semi Supervised Generative Models   
+https://jaejunyoo.blogspot.com/2018/09/pr12-video-71-gumbel-softmax.html
+# 1/6 4. Experiement Results   
