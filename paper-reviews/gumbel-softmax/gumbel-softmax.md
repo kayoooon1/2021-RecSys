@@ -33,19 +33,19 @@ Uniform(0, 1) and computing g = − log(− log(u))
   * expectation(실력이라고 볼 수 있음), 대회를 해서 1등을 가릴 때, 6번 애가 이기게 되는 것이다. 따라서 argmax도 6이 된다. r가 바뀔 때마다 값도 바뀐다. 0.1일 때는 기존 distribution을 많이 바꾸지 않는다 (비슷하다) 점점 temperature이 높아지면 변화가 생기고, 가끔 다른 선수들도 경기에서 1등을 하게 된다. r가 높아지면 동등하게 되는 모습!   
   * 논문에서는 처음에 낮은 값에서 시작하여 maximum 2.0값으로 annealing하여 종료   
 
-  ### 2.1 Gumbel-Softmax Estimator   
+  ### Gumbel-Softmax Estimator   
   *  By replacing categorical samples with Gumbel-Softmax samples we can use backpropagation to compute gradient   
   *  Replacing non-differentiable categorical samples with a differentiable approximation during training as the Gumbel-Softmax estimator.   
   -> 선수 1명만 뽑던 것을 gumbel을 train하면서 비슷하게 범주형 변수를 미분 가능하도록 바꾸겠다는 뜻으로 이해하였음   
   * temperature은 fixed   
 
-  ### 2.2 Straight Through Gumbel Softmax Estimator   
+  ### Straight Through Gumbel Softmax Estimator   
   * y가 우리가 원래 trick에서 보던 argmax(discrete)이니까 연속인 z로 근사하겠다는 뜻으로 이해하였음   
   = Gumbel softmax trick을 사용하여 discrete distribution을 샘플링, argmax 대신에 softmax 대체      
 
-## 3. Related Work   
+## Related Work   
   Review existing stochastic gradient estimation techniques for discrete variables
-  ### 3.1 Path Derivative Gradient Estimators   
+  ### Path Derivative Gradient Estimators   
     * We exploit such a trick in the construction of the Gumbel-Softmax estimator.   
   ![3-figure2.png](./3-figure2.png)   
   * Gumbel-Softmax avoids this problem because each sample y is a differentiable proxy of the corresponding discrete sample z.   
