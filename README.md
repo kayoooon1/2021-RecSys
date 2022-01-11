@@ -1,8 +1,12 @@
 # 2021-RecSys   
 During the internship in CAU Data Science Lab, I researched about the recommendation system in detail.   
 
+
+
 ## Lecture   
 [Study Group for CSCI 5123](https://github.com/CAU-Data-Science-Lab/2021S-RecSys-Study)   
+
+
 
 ## Curriculum   
 1. Non Personalized Recommendation System   
