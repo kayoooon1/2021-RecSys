@@ -51,7 +51,24 @@ Uniform(0, 1) and computing g = − log(− log(u))
   * Gumbel-Softmax avoids this problem because each sample y is a differentiable proxy of the corresponding discrete sample z.   
   * stochastic 부분과 deterministic부분을 분해시켜서 deterministic 한 부분으로 backpropagation을 흐르게, deterministic 한 부분은 vae에서는 평균과 분산 stochastic 한 부분은 epsilon
 
+## Gumbel-Softmax in Pytorch & Tensorflow   
+### Pytorch   
+[TORCH.NN.FUNCTIONAL.GUMBEL_SOFTMAX](https://pytorch.org/docs/stable/generated/torch.nn.functional.gumbel_softmax.html)   
+![pytorch.png](./pytorch.png)   
+* logits : 노드들의 결과값   
+* tau : temperature   
+* hard : If True, one-hot 벡터로 출력, soft라면 수식 계산한 값이 나온다.   
+* dim : 내가 계산하고 싶은 dimension   
 
-## My Summary (Did my Best haha)   
+### Tensorflow  
+[tf_agents.distributions.gumbel_softmax.GumbelSoftmax](https://www.tensorflow.org/agents/api_docs/python/tf_agents/distributions/gumbel_softmax/GumbelSoftmax)   
+``` 
+tf_agents.distributions.gumbel_softmax.GumbelSoftmax(
+    temperature, logits=None, probs=None, dtype=tf.int32, validate_args=False,
+    allow_nan_stats=True, name='GumbelSoftmax'
+)
+```
+
+## My Summary    
 Gumbel Softmax는 Discrete한 애들에서 Reparameterization Trick을 사용하기 위한 방법을 고안한 것이라고 이해하였다. 이전에 VAE에서 가우시안 분포에서 뮤랑 시그마가 정해졌을 때 우리가 z를 엄청 많이 뽑아서 Monte Carlo를 써줘서 평균으로 계산을 했었는데, 이번에는 Sampling 자체가 **Stochastic**하기 때문에 미분이 어렵고, Monte Carlo와 Reparameterization Trick도 못 쓰는 것으로 이해하였다. 그래서 우리는 Gumbel Distribution Trick을 사용하기로 했다. 이는 Reparameterization trick for the categorical distribution으로 간략하게 설명할 수 있겠다. 그런데 여기에서 categorical distribution은 우리가 근사한 것이다. 여기에서 Gumbel Max Trick이 등장하는데, 우리가 VAE에서 가우시안에서 값을 뽑았던 것처럼 Gumbel distribution에서 뽑아주는 것이다. 그러면 categorical distribution과 확률이 같다고 수학적으로 증명되었다고 한다. 그런데 여기서 문제점은 미분이 불가능하다는 것, 이를 위해 Softmax가 등장하게 된다. 따라서 이전에 배운 Reparmeterization Trick과 비슷하게 deterministic과 stochastic을 분리하는데, discrete을 위한 다른 version이라고 이해하였다.   
 ![pg1.jpg](./pg1.jpg)![pg2.jpg](./pg2.jpg)![pg3.jpg](./pg3.jpg)
