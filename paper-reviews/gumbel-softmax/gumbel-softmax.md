@@ -41,7 +41,8 @@ Uniform(0, 1) and computing g = − log(− log(u))
 
   ### Straight Through Gumbel Softmax Estimator   
   * y가 우리가 원래 trick에서 보던 argmax(discrete)이니까 연속인 z로 근사하겠다는 뜻으로 이해하였음   
-  = Gumbel softmax trick을 사용하여 discrete distribution을 샘플링, argmax 대신에 softmax 대체      
+  = Gumbel softmax trick을 사용하여 discrete distribution을 샘플링, argmax 대신에 softmax 대체     
+  * Forward 시에는 one-hot, Backward 시에는 soft's gradient로   
 
 ## Related Work   
   Review existing stochastic gradient estimation techniques for discrete variables
@@ -61,14 +62,38 @@ Uniform(0, 1) and computing g = − log(− log(u))
 * dim : 내가 계산하고 싶은 dimension   
 
 ### Tensorflow  
-[tf_agents.distributions.gumbel_softmax.GumbelSoftmax](https://www.tensorflow.org/agents/api_docs/python/tf_agents/distributions/gumbel_softmax/GumbelSoftmax)   
+1. [tf_agents.distributions.gumbel_softmax.GumbelSoftmax](https://www.tensorflow.org/agents/api_docs/python/tf_agents/distributions/gumbel_softmax/GumbelSoftmax)   
 ``` 
 tf_agents.distributions.gumbel_softmax.GumbelSoftmax(
     temperature, logits=None, probs=None, dtype=tf.int32, validate_args=False,
     allow_nan_stats=True, name='GumbelSoftmax'
 )
-```
+```   
 
+2. Functions   
+```
+def sample_gumbel(shape, eps=1e-20):
+  """Sample from Gumbel(0,1)"""
+  """The Gumbel(0, 1) distribution can be sampled using inverse transform sampling by drawing u ∼
+  Uniform(0, 1) and computing g = − log(− log(u))"""
+  U = tf.random_uniform(shape, minval=0, maxval=1)
+  return -tf.log(tf.log(U + eps) + eps)
+
+def gumbel_softmax_sample(logits, temperature):
+  """Draw a sample from the Gumbel-Softmax distribution"""
+  """Gumbel 값 더하고 소프트맥스로 근사"""
+  y= logits + sample_gumbel(tf.shape(logits))
+  return tf.nn.softmax(y/temperature)
+
+def gumbel_softmax(logits, temperature, hard=False):
+  y = gumbel_softmax_sample(logits, temperature) # 샘플하기
+  if hard: # 0,1로 나타내고 싶을 때
+     k = tf.shape(logits)[:-1]
+     y_hard = tf.cast(tf.equal(y,tf.reduce_max(y,1,keep_dims=True)), y.dtype)
+     y = tf.stop_gradient(y_hard - y) + y
+     # Forward with one-hot, Backward with soft's gradient 
+  return y
+```
 ## My Summary    
 Gumbel Softmax는 Discrete한 애들에서 Reparameterization Trick을 사용하기 위한 방법을 고안한 것이라고 이해하였다. 이전에 VAE에서 가우시안 분포에서 뮤랑 시그마가 정해졌을 때 우리가 z를 엄청 많이 뽑아서 Monte Carlo를 써줘서 평균으로 계산을 했었는데, 이번에는 Sampling 자체가 **Stochastic**하기 때문에 미분이 어렵고, Monte Carlo와 Reparameterization Trick도 못 쓰는 것으로 이해하였다. 그래서 우리는 Gumbel Distribution Trick을 사용하기로 했다. 이는 Reparameterization trick for the categorical distribution으로 간략하게 설명할 수 있겠다. 그런데 여기에서 categorical distribution은 우리가 근사한 것이다. 여기에서 Gumbel Max Trick이 등장하는데, 우리가 VAE에서 가우시안에서 값을 뽑았던 것처럼 Gumbel distribution에서 뽑아주는 것이다. 그러면 categorical distribution과 확률이 같다고 수학적으로 증명되었다고 한다. 그런데 여기서 문제점은 미분이 불가능하다는 것, 이를 위해 Softmax가 등장하게 된다. 따라서 이전에 배운 Reparmeterization Trick과 비슷하게 deterministic과 stochastic을 분리하는데, discrete을 위한 다른 version이라고 이해하였다.   
 ![pg1.jpg](./pg1.jpg)![pg2.jpg](./pg2.jpg)![pg3.jpg](./pg3.jpg)
