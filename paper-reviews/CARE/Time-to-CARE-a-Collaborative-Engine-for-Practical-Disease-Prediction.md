@@ -40,6 +40,18 @@
 * Output은 ranked list   
    
 ### Vector Similarity   
+1. 용어 정리   
+* p(a, j) : a가 disease(item) j를 사용할, 가질 예측값   
+* a = active user(testing), every other user i (previously given a vote vi,j for item j)   
+* I = The entire training set of users, Ij = the subset of users who've voted on j   
+* w(a, i) : vector similarity btw users a and i   
+2. w(a, i)   
+![4.2-1](./4.2-1)   
+a와 i가 얼마나 비슷한지 측정한다.   
+cf. 코사인 유사도는 두 벡터 간의 코사인 각도를 이용하여 구할 수 있는 두 벡터의 유사도를 의미, 두 벡터의 방향이 완전히 동일한 경우에는 1의 값을 가지고, 90도의 각을 이루면 0의 값, 180도로 반대의 방향을 가지면 -1의 값을 가진다. 즉, -1 이상 1이하의 값을 가지며 값이 1에 가까울수록 유사도가 높다고 판단   
+3. p(a, j)   
+![4.2-2](./4.2-2)   
+![4.2-3](./4.2-3)
 ### Inverse Frequency   
 ### Grouping of training patients   
 ### ICARE with ensembles   
