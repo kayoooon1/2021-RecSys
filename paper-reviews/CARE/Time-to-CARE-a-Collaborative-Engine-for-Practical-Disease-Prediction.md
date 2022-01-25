@@ -49,7 +49,7 @@
 ![4.2-1](./4.2-1.jpg)   
 - $a$와 $i$가 얼마나 비슷한지 측정한다.   
     cf. 코사인 유사도는 두 벡터 간의 코사인 각도를 이용하여 구할 수 있는 두 벡터의 유사도를 의미, 두 벡터의 방향이 완전히 동일한 경우에는 1의 값을 가지고, 90도의 각을 이루면 0의 값, 180도로 반대의 방향을 가지면 -1의 값을 가진다. 즉, -1 이상 1이하의 값을 가지며 값이 1에 가까울수록 유사도가 높다고 판단   
-#### 3. p(a, j)   
+#### 3. $p(a, j)$   
 ![4.2-2](./4.2-2.jpg)   
 - 기존 방정식에서 이진 진단(0,1)을 통합하고 ratings 범위의 effect를 제거하기 위해서 수정   
 - $\bar{v}_j$ : 질병의 random expectation   
@@ -95,5 +95,17 @@
 * small groups of related or similar disease 같은 경우 3-digit codes로 축소시킴  
 
 ## Time-sensitive CARE
+* 비슷한 시기적 패턴을 보이면 혼자끼리 비슷하다고 볼 수 있기 때문에 hospital visit과 같은 의학적 event 사이의 시간 길이를 통합하기로 함   
+* 이전의 CARE 방법은 training patient의 병의 (발병) 순서를 무시한다. (common 질병 때문에 5번 방문 > 심각한 병으로 인한 1번 방문) → 병의 치명적 영향이나 자연 발생을 놓칠 수 있음   
+   
+### Compromise   
+1. $a$와 best vector match를 이루는 training patient $i$의 연속 방문 subset을 찾는다.   
+    * $sub_s,_z$ = s~z까지의 연속 방문 set   
+    * * Algorithm best_match($a, visits$) 
+2. subset을 바탕으로 $best (a, i)$ 를 찾는다.   
+    * $best (a, i)$ = $max(w(a, sub_s,_z)),$ $\;$ $1\leq$ $s\leq$ $z\leq$ $n$   
+    * best는 training patient $i$가 $a$와 가장 비슷한 의학적 경험을 한 time period, 계속 갱신되는 visits는 $a$의 병의 경과와 가장 관련된 정보이다!   
+3. 이전 방정식을 수정하여 최상의 일치 벡터 유사도가 최상의 일치 시간 프레임 이후에 방문에서 발생하는 질병에 대한 예측 가중치만 추가   
+    * $Z_j$ $i$의 집합 중 z 이후 n까지 방문한 것임   
 
-
+![5-1](./5-1.png)
