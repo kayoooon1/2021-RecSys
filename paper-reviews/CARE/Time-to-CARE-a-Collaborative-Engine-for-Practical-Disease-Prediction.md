@@ -103,11 +103,12 @@
 ### Compromise   
 1. $a$와 best vector match를 이루는 training patient $i$의 연속 방문 subset을 찾는다.   
     * $sub_s,_z$ = s~z까지의 연속 방문 set   
-    * * Algorithm best_match($a, visits$) 
+    * Algorithm best_match($a, visits$) :question: greedy?
 2. subset을 바탕으로 $best (a, i)$ 를 찾는다.   
     * $best (a, i)$ = $max(w(a, sub_s,_z)),$ $\;$ $1\leq$ $s\leq$ $z\leq$ $n$   
+    * 즉 training patient의 연속 방문한 기간의 질병 기록과 a 질병 기록이 가장 비슷한 것을 찾는 것
     * best는 training patient $i$가 $a$와 가장 비슷한 의학적 경험을 한 time period, 계속 갱신되는 visits는 $a$의 병의 경과와 가장 관련된 정보이다!   
-3. 이전 방정식을 수정하여 최상의 일치 벡터 유사도가 최상의 일치 시간 프레임 이후에 방문에서 발생하는 질병에 대한 예측 가중치만 추가   
+3. 이전 방정식을 수정하여 최상의 일치 벡터 유사도가 최상의 일치 시간(best_match) 프레임 이후에 방문에서 발생하는 질병에 대한 예측 가중치만 추가   
     * $Z_j$ $i$의 집합 중 z 이후 n까지 방문한 것임   
 
 ![5-1](./5-1.png)
