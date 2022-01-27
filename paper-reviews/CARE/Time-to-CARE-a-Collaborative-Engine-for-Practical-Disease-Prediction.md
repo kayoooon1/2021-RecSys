@@ -25,6 +25,7 @@
 1. International classification of Disease code를 사용한다.   
 2. 사용된 협업 필터링 방법은 이전 작업을 기반으로 하며 CARE 내에서 의미 테스트 및 앙상블 방법의 새로운 요소를 통합   
 3. A time sensitive   
+![1-1](./1-1.jpg)
    
 ## Data   
 * Input : 각 환자의 방문 마다의 질병 이력 ICD-9 코드   
@@ -36,7 +37,7 @@
 * Testing patient (denoted as $a$), Training patients (denoted as $I$, individuals $i$)   
 * Training set은 협력 필터링을 적용하기 전에 테스트 환자와 공통된 질병이 두 개 이상 있는 환자로 제한    
     * Test patient a 와 가장 비슷한 group of patients가 모이게 된다.   
-* 이후 collaborative filtering 적용, ICARE의 경우 각 환자마다 multiple times를 하여 각 질병에 매번 different training patient group을 만든다. 다수의 겨과 예측은 앙상블을 형성하기 위한 것이다.   
+* 이후 collaborative filtering 적용, ICARE의 경우 각 환자마다 multiple times를 하여 각 질병에 매번 different training patient group을 만든다. 다수의 결과 예측은 앙상블을 형성하기 위한 것이다.   
 * Output은 ranked list   
    
 ### Vector Similarity   
@@ -90,12 +91,13 @@
         * $z$ = $\frac{p1 - p2}{Sp_1-p_2}$   
         * $p1-p2$는 샘플 비율 차이고, S는 표준오차   
         * 95% 신뢰구간   
+* group of training patients 중 머신러닝 앙상블 학습처럼 앙상블들 중에 max인 값을 골라서 사용하겠다는 것으로 이해
 
 ### ICD-9CM code collapse (코드 축소)   
 * small groups of related or similar disease 같은 경우 3-digit codes로 축소시킴  
 
 ## Time-sensitive CARE
-* 비슷한 시기적 패턴을 보이면 혼자끼리 비슷하다고 볼 수 있기 때문에 hospital visit과 같은 의학적 event 사이의 시간 길이를 통합하기로 함   
+* 비슷한 시기적 패턴을 보이면 더 비슷하다고 볼 수 있기 때문에 hospital visit과 같은 의학적 event 사이의 시간 길이를 통합하기로 함   
 * 이전의 CARE 방법은 training patient의 병의 (발병) 순서를 무시한다. (common 질병 때문에 5번 방문 > 심각한 병으로 인한 1번 방문) → 병의 치명적 영향이나 자연 발생을 놓칠 수 있음   
    
 ### Compromise   
