@@ -1,4 +1,4 @@
-# Adaptive Sequential Model Generation   
+# Adaptive Sequential Model Generator for Incrementally Updating Recommender Systems      
 
 * Reviewer : 김가윤   
 * Date : 2022-05-13   
@@ -26,15 +26,16 @@
 2. Regularization based   
     * 중요도에 따라 파라미터 업데이트를 제한해 과거 지식을 얻는 것    
 3. Model fusion    
-    * 점진적으로 sub-networks를 포함하면서 continual learning    
+    * 점진적으로 sub-networks를 포함하면서 continual learning   
 
-= RS에서도 잘 작동시키기 위해 여러 방법 고안 중
+
+    = RS에서도 잘 작동시키기 위해 여러 방법 고안 중
 
 ### Sample-based Approach   
 * RSs incremental update에서 생기는 forgetting issue 해결 방법 중 하나, continual learning에서 착안   
 * Short term interest & Long term memory 사이에서 aiming to find the balance
 * Reusing historical samples 하기 때문에 1번과 유사하다고 볼 수 있음   
-* Reservoir(keep a random sample of history)
+* Reservoir : keep a random sample of history
 * Heuristics : Designed to Reservoir에서 샘플들 골라서 모델 업데이트, 새로운 데이터 우선시 할지 or 과거 데이터 버릴지...    
 * *문제점* : individual samples, 전체 분포의 큰 그림을 재현하기 충분치 않다. = 전체를 충분하게 대표하지 못한다   
     -> past, present models 사이에서 knowledge transfer하는 model based approach 등장   
@@ -47,3 +48,9 @@
 * *문제점* : ONLY 연속적인 periods들의 transfer만 고려한다.   
 
 ## METHODOLOGY   
+### Problem Discription   
+* Conventional Incremental Update in RS : (RNN처럼) last period model을 initialize 하는데 쓰고, 새로운 데이터와 업데이트한다, Overfitting 문제 & Forget past patterns learned   
+
+### ASMG Framework   
+* 전통적인 방법과 달리 바로 deploy하지 않고, meta generator 사용 (과거 모델, newly updated one까지 포함한 것)   
+* 다음 기간 데이터를 위해 출력 모델을 적응적으로 최적화하여 메타 생성기를 업데이트할 것을 제안
