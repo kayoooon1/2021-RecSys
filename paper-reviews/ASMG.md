@@ -53,4 +53,16 @@
 
 ### ASMG Framework   
 * 전통적인 방법과 달리 바로 deploy하지 않고, meta generator 사용 (과거 모델, newly updated one까지 포함한 것)   
-* 다음 기간 데이터를 위해 출력 모델을 적응적으로 최적화하여 메타 생성기를 업데이트할 것을 제안
+* 다음 기간 데이터를 위해 출력 모델을 적응적으로 최적화하여 메타 생성기를 업데이트할 것을 제안   
+* Input sequence model = Regular incremental update로부터 얻어지기 때문에 each period의 모델은 그 시기의 데이터로만 train된다.   
+    * 각 period를 잘 나타낸다고 볼 수 있음 (Sample based 접근의 문제점 보완한듯?)   
+
+### GRU Meta Generator    
+* Sequential patterns 포착하기 위해 GRU 사용하며 베이스 모델의 좌표 별로 GRU meta generator 적용   
+
+### Training Strategies   
+1. Training GRU Meta Generatror on Truncated Sequence   
+* GRU의 단점 중 하나로 시퀀스 길이에 따라 계산 시간이 증가한다는 것이었으므로 이전에 학습된 은닉 상태(hidden state)를 계속하여 잘린 시퀀스에서 GRU 생성기를 훈련할 것을 제안   
+2. Training GRU Meta Generator at Multiple Steps Concurrently   
+* 여러 단계에서 동시 훈련하기   
+* last model에만 최적화 하는 것이 아니라 
