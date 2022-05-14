@@ -42,6 +42,7 @@
 
 ### Model-based Approach   
 * Regularization based와 유사, 모델 파라미터 업데이트 위해 knowledge distillation loss 사용하기 때문   
+    cf. [딥러닝 모델 지식의 증류, Knowledge distillation과 loss에 관하여](https://baeseongsu.github.io/posts/knowledge-distillation/)
 * 그러나 제한만 한다고 해서 knowledge가 future prediction에 useful하다고 볼 수 없다.   
 * 이에 관련해 고안된 *Sequential Meta Learning(SML)* !!   
     - 이전 모듈을 과거와 현재 모델에 결합하도록 설계하고, 순차적 방식으로 적응적으로 훈련하여 향후 서비스를 최적화   
@@ -63,6 +64,24 @@
 ### Training Strategies   
 1. Training GRU Meta Generatror on Truncated Sequence   
 * GRU의 단점 중 하나로 시퀀스 길이에 따라 계산 시간이 증가한다는 것이었으므로 이전에 학습된 은닉 상태(hidden state)를 계속하여 잘린 시퀀스에서 GRU 생성기를 훈련할 것을 제안   
+* ASMG-GRU single   
+
 2. Training GRU Meta Generator at Multiple Steps Concurrently   
 * 여러 단계에서 동시 훈련하기   
-* last model에만 최적화 하는 것이 아니라 
+* last model에만 최적화 하는 것이 아니라 전체 output model과 데이터에 동시에 최적화, 최근 데이터에 가중치를 더 줌   
+* 초기 기간의 데이터가 기본 모델 대신 메타 생성기를 훈련시키는 데 사용되기 때문에 배치 업데이트와 구별되어야   
+* ASMG Framework에 있는 GRU meta generator을 ASMG-GRU라고 한다.   
+* ASMG-GRU multi   
+
+### Instantiation on Embedding & MLP Base Model   
+* ASMG-GRU의 효과를 측정하기 위해 딥러닝 기반의 임베딩 & 멀티 레이어 퍼셉트론 모델을 인스턴스화   
+* 모델은 주로 고차원 희소 피처를 저차원 밀도 벡터로 변환하는 임베딩 레이어(Sparse to dense)와 연결된 피처 임베딩의 상호 작용을 학습하는 MLP 레이어로 구성   
+* 추가 요망    
+   
+## Experiments   
+* Interaction의 의미 = activity log, 물건 산 것   
+* [Tmall](https://tianchi.aliyun.com/dataset/dataDetail?dataId=42)   
+* [Sobazaar](https://github.com/hainguyen-telenor/Learning-to-rank-from-implicit-feedback)   
+* MovieLens   
+* Lazada   
+* 30개 최근 긍정적 피드백을 모아서 user sequence feature을 만들었다. **긍정적 피드백 = 구매했다는 것으로 이해**   
