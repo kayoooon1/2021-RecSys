@@ -39,9 +39,7 @@
 * Heuristics : Designed to Reservoir에서 샘플들 골라서 모델 업데이트, 새로운 데이터 우선시 할지 or 과거 데이터 버릴지...    
 * *문제점* : individual samples, 전체 분포의 큰 그림을 재현하기 충분치 않다. = 전체를 충분하게 대표하지 못한다   
     -> past, present models 사이에서 knowledge transfer하는 model based approach 등장   
-![reservoir.png](./reservoir.png)   
-
-
+!image.png[image.png]
 
 ### Model-based Approach   
 * Regularization based와 유사, 모델 파라미터 업데이트 위해 knowledge distillation loss 사용하기 때문   
