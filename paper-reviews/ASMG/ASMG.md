@@ -2,11 +2,12 @@
 
 * Reviewer : 김가윤   
 * Date : 2022-05-13   
+* slides : https://github.com/danni9594/ASMG/blob/master/slide.pdf
    
 ## ABSTRACT   
 * ASMG framework generates a better serving model from sequence of historical models via a meta generator, 메타 생성기를 통해 모델 히스토리를 가지고 더 나은 모델을 생성한다.   
 * 메타 생성기를 만들 때 Gated Recurrent Units, GRUs 사용 해서 long term dependencies 포착해 ability를 최대화한다   
-
+</br>
 ## INTRODUCTION   
 * 업데이트가 중요해진 요즘, 새로운 데이터가 나타날 때마다 시기적으로 업데이트를 하는 것이 중요   
 * 이전 연구에서는 새롭게 나타난 데이터 (incremental update)만 혹은 슬라이딩 윈도를 사용해 w 시기만을 업데이트 가능 (batch update), incremetal update가 주로 많이 사용되지만 = BUT, forgetting problem   
@@ -15,7 +16,9 @@
     * Continual learning에서 고안한 방법들
     * 해결을 위해 ASMG 고안
     * 과거 지식을 뽑아서 다음 시기 데이터에 최적화 하도록 train   
-    * long term dependencies 강화하기 위해 GRUs 사용
+    * long term dependencies 강화하기 위해 GRUs 사용   
+
+</br>   
 
 ## RELATED WORK   
 ### Continual Learning   
@@ -48,10 +51,14 @@
 * 이에 관련해 고안된 *Sequential Meta Learning(SML)* !!   
     - 이전 모듈을 과거와 현재 모델에 결합하도록 설계하고, 순차적 방식으로 적응적으로 훈련하여 향후 서비스를 최적화   
 * *문제점* : ONLY 연속적인 periods들의 transfer만 고려한다.   
+</br>
 
 ## METHODOLOGY   
 ### Problem Discription   
 * Conventional Incremental Update in RS : (RNN처럼) last period model을 initialize 하는데 쓰고, 새로운 데이터와 업데이트한다, Overfitting 문제 & Forget past patterns learned   
+* Dt = current data, initialize with theta t-1 -> minimize the loss
+
+![conventional-incremental-update.png](conventional-incremental-update.png)
 
 ### ASMG Framework   
 * 전통적인 방법과 달리 바로 deploy하지 않고, meta generator 사용 (과거 모델, newly updated one까지 포함한 것)   
@@ -59,26 +66,36 @@
 * Input sequence model = Regular incremental update로부터 얻어지기 때문에 each period의 모델은 그 시기의 데이터로만 train된다.   
     * 각 period를 잘 나타낸다고 볼 수 있음 (Sample based 접근의 문제점 보완한듯?)   
 
-### GRU Meta Generator    
+![asmg-framework.png](asmg-framework.png)
+
+### GRU Meta Generator   
+cf. [GRU(Gated Recurrent Unit)](https://wikidocs.net/22889) 
 * Sequential patterns 포착하기 위해 GRU 사용하며 베이스 모델의 좌표 별로 GRU meta generator 적용   
 
-### Training Strategies   
+![network-design.png](network-design.png)
+
+### Training Strategies  
+- Training efficiency & Sequential modeling improve 위한 training stratgies 
 1. Training GRU Meta Generatror on Truncated Sequence   
-* GRU의 단점 중 하나로 시퀀스 길이에 따라 계산 시간이 증가한다는 것이었으므로 이전에 학습된 은닉 상태(hidden state)를 계속하여 잘린 시퀀스에서 GRU 생성기를 훈련할 것을 제안   
-* ASMG-GRU single   
+    * GRU의 단점 중 하나로 시퀀스 길이에 따라 계산 시간이 증가한다는 것이었으므로 이전에 학습된 은닉 상태(hidden state)를 계속하여 잘린 시퀀스에서 GRU 생성기를 훈련할 것을 제안   
+    * ASMG-GRU single   
 
 2. Training GRU Meta Generator at Multiple Steps Concurrently   
-* 여러 단계에서 동시 훈련하기   
-* last model에만 최적화 하는 것이 아니라 전체 output model과 데이터에 동시에 최적화, 최근 데이터에 가중치를 더 줌   
-* 초기 기간의 데이터가 기본 모델 대신 메타 생성기를 훈련시키는 데 사용되기 때문에 배치 업데이트와 구별되어야   
-* ASMG Framework에 있는 GRU meta generator을 ASMG-GRU라고 한다.   
-* ASMG-GRU multi   
+    * 여러 단계에서 동시 훈련하기   
+    * last model에만 최적화 하는 것이 아니라 전체 output model과 데이터에 동시에 최적화, 최근 데이터에 가중치를 더 줌   
+    * 초기 기간의 데이터가 기본 모델 대신 메타 생성기를 훈련시키는 데 사용되기 때문에 배치 업데이트와 구별되어야   
+    * ASMG Framework에 있는 GRU meta generator을 ASMG-GRU라고 한다.   
+    * ASMG-GRU multi   
+
+![asmg-gru.png](asmg-gru.png)   
 
 ### Instantiation on Embedding & MLP Base Model   
 * ASMG-GRU의 효과를 측정하기 위해 딥러닝 기반의 임베딩 & 멀티 레이어 퍼셉트론 모델을 인스턴스화   
 * 모델은 주로 고차원 희소 피처를 저차원 밀도 벡터로 변환하는 임베딩 레이어(Sparse to dense)와 연결된 피처 임베딩의 상호 작용을 학습하는 MLP 레이어로 구성   
-* 추가 요망    
-   
+
+![embedding-mlp.png](embedding-mlp.png)    
+</br>
+
 ## Experiments   
 * Interaction의 의미 = activity log, 물건 산 것   
 * [Tmall](https://tianchi.aliyun.com/dataset/dataDetail?dataId=42)   
@@ -86,3 +103,16 @@
 * MovieLens   
 * Lazada   
 * 30개 최근 긍정적 피드백을 모아서 user sequence feature을 만들었다. **긍정적 피드백 = 구매했다는 것으로 이해**   
+
+### Comparison with Baselines   
+* Performance drops as window size increases = 시퀀스 계산 길어져서   
+* Model-based > Sample-based   
+* GRU meta generator design이 성능이 좋았다.   
+
+### Ablation Study   
+* ASMG-GRUfull, zero, single 변형을 통해 성능 측정 하였다.   
+* GRU multi일 때가 시간이 더 적게 들었고, 성능 측면에서도 비슷   
+
+### Sensivitivy Analysis   
+* Effect of Input Sequence Length = Optimal was 3-4 periods   
+* Effect of GRU Hidden Size = 4 Units
