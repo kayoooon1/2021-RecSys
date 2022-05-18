@@ -57,21 +57,31 @@
 ## METHODOLOGY   
 ### Problem Discription   
 * Conventional Incremental Update in RS : (RNN처럼) last period model을 initialize 하는데 쓰고, 새로운 데이터와 업데이트한다, Overfitting 문제 & Forget past patterns learned   
-* Dt = current data, initialize with theta t-1 -> minimize the loss
+* Dt = current data, initialize with theta t-1(이전 것으로 initialize) -> minimize the loss
 
 ![conventional-incremental-update.png](conventional-incremental-update.png)
+   
 
 ### ASMG Framework   
 * 전통적인 방법과 달리 바로 deploy하지 않고, meta generator 사용 (과거 모델, newly updated one까지 포함한 것)   
 * 다음 기간 데이터를 위해 출력 모델을 적응적으로 최적화하여 메타 생성기를 업데이트할 것을 제안   
 * Input sequence model = Regular incremental update로부터 얻어지기 때문에 each period의 모델은 그 시기의 데이터로만 train된다.   
     * 각 period를 잘 나타낸다고 볼 수 있음 (Sample based 접근의 문제점 보완한듯?)   
+* theta 0는 제외, randomly initialized 되었기 때문이다.
+* omega t+1 = arg min Loss (theta*t| Dt+1, omega t)   
+* Online model generatoin 하기 전에 Offline으로 warm-up training 진행
 
 ![asmg-framework.png](asmg-framework.png)
 
 ### GRU Meta Generator   
-cf. [GRU(Gated Recurrent Unit)](https://wikidocs.net/22889) 
+cf. [GRU(Gated Recurrent Unit)](https://wikidocs.net/22889)   
+cf. [GRU in detail](https://yjjo.tistory.com/18)    
 * Sequential patterns 포착하기 위해 GRU 사용하며 베이스 모델의 좌표 별로 GRU meta generator 적용   
+* ri = reset, 직전시점 은닉층 + 현 시점 가중치   
+* zi = update, 과거 현재 최신화 비율 결정   
+* h~i = candidate   
+* hi = update + candidate, 은닉층 계산   
+
 
 ![network-design.png](network-design.png)
 
@@ -79,6 +89,7 @@ cf. [GRU(Gated Recurrent Unit)](https://wikidocs.net/22889)
 - Training efficiency & Sequential modeling improve 위한 training stratgies 
 1. Training GRU Meta Generatror on Truncated Sequence   
     * GRU의 단점 중 하나로 시퀀스 길이에 따라 계산 시간이 증가한다는 것이었으므로 이전에 학습된 은닉 상태(hidden state)를 계속하여 잘린 시퀀스에서 GRU 생성기를 훈련할 것을 제안   
+    * 다대일 many to one
     * ASMG-GRU single   
 
 2. Training GRU Meta Generator at Multiple Steps Concurrently   
@@ -86,6 +97,7 @@ cf. [GRU(Gated Recurrent Unit)](https://wikidocs.net/22889)
     * last model에만 최적화 하는 것이 아니라 전체 output model과 데이터에 동시에 최적화, 최근 데이터에 가중치를 더 줌   
     * 초기 기간의 데이터가 기본 모델 대신 메타 생성기를 훈련시키는 데 사용되기 때문에 배치 업데이트와 구별되어야   
     * ASMG Framework에 있는 GRU meta generator을 ASMG-GRU라고 한다.   
+    * 다대다 many to many
     * ASMG-GRU multi   
 
 ![asmg-gru.png](asmg-gru.png)   
