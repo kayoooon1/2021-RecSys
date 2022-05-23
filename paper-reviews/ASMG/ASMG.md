@@ -69,7 +69,7 @@
     * 각 period를 잘 나타낸다고 볼 수 있음 (Sample based 접근의 문제점 보완한듯?)   
 * theta 0는 제외, randomly initialized 되었기 때문이다.
 * omega t+1 = arg min Loss (theta*t| Dt+1, omega t)   
-* Online model generatoin 하기 전에 Offline으로 warm-up training 진행
+* Online model generatoin 하기 전에 Offline으로 warm-up training 진행(온라인이라 함은, 새로운 데이터가 준비되는 대로 실시간으로!!)   
 
 ![asmg-framework.png](asmg-framework.png)
 
