@@ -19,3 +19,4 @@ During the internship in CAU Data Science Lab, I researched about the recommenda
 8. Gumbel Softmax   
 9. Collaborative engine for practical disease prediction (CARE)   
 10. Adaptive Sequential Model Generator for Incrementally Updating Recommender Systems
+11. Embarrassingly Shallow Autoencoders for Sparse Data
